@@ -1419,7 +1419,7 @@ rule calculate_signatures:
     input: data_snakefile('inputs/data/{sample}.fastq.gz')
     output: sig = 'outputs/sigs/{sample}.scaled2k.sig'
     message: '--- Compute sourmash sigs using quality trimmed data.'
-    conda: 'snakefiles/env.yml'
+    conda: 'env.yml'
     benchmark: 'benchmarks/{sample}.compute.benchmark.txt'
     shell:'''
     sourmash compute -o {output.sig} --scaled 2000 -k 21,31,51 --track-abundance {input}
@@ -1434,7 +1434,7 @@ rule gather_genbank:
         matches = 'outputs/gather/matches/{sample}.matches', 
         un = 'outputs/gather/unassigned/{sample}.un'
     message: '--- Classify signatures with gather.'
-    conda: 'snakefiles/env.yml'
+    conda: 'env.yml'
     benchmark: 'benchmarks/{sample}.gather.benchmark.txt'
     shell:'''
     sourmash gather -o {output.gather} \
@@ -1454,7 +1454,7 @@ rule gather_human_dbs:
         matches = 'outputs/gather_human_micro/matches/{sample}.matches',
         un = 'outputs/gather_human_micro/unassigned/{sample}.un'
     message: '--- Classify signatures with gather using Pasolli, Almeida, and Nayfach dbs.'
-    conda: 'snakefiles/env.yml'
+    conda: 'env.yml'
     benchmark: 'benchmarks/{sample}.gather_human_dbs.benchmark.txt'
     shell:'''
     sourmash gather \

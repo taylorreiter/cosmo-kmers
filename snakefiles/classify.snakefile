@@ -1344,47 +1344,82 @@ SAMPLES = ['HSMA33OT',
 'ESM9IEP1',
 'HSMA33NQ',
 'HSM67VI9',
-'MSMA26AV',]
-
-                             
-# Association between output files and source links
-links = {'genbank-d2-k51.sbt.json' : 'https://s3-us-west-2.amazonaws.com/sourmash-databases/genbank-d2-k51.tar.gz'}
-         'pasolli-mags-k51.sbt.json' : 'https://osf.io/pm5qb/download',
-         'almeida-mags-k51.sbt.json' : 'https://osf.io/9uq4m/download'}
-        #'nayfach-mags-k51.sbt.json' : ''}
-
-# Make this association accessible via a function of wildcards
-def chainfile2link(wildcards):
-    return links[wildcards.chainfile]
-
-rule download_databases:
-    output:
-        os.path.join('inputs/databases/', '{chainfile}')
-    message:
-        '--- download and unpack gather databases.'
-    params:
-        # using a function of wildcards in params
-        link = chainfile2link,
-        out_dir = 'inputs/databases'
-    shell:
-        '''
-        wget {params.link}
-        tar xf genbank-d2-k51.tar.gz -C {params.out_dir}
-        #tar xf refseq-d2-k51.tar.gz -C {params.out_dir}
-        '''
+'MSMA26AV']
 
 subworkflow data_snakefile:
-    workdir: "."
     snakefile: "snakefiles/data.snakefile"
+
+
+rule download_genbank:
+    output: "inputs/databases/genbank-d2-k51.tar.gz"
+    params: 
+        link="https://s3-us-west-2.amazonaws.com/sourmash-databases/genbank-d2-k51.tar.gz"
+    message: '--- download and unpack gather databases.'
+    shell:'''
+    wget -O {output} {params.link}
+    '''
+
+rule untar_genbank:
+    output: "inputs/databases/genbank-d2-k51.sbt.json"
+    input: "inputs/databases/genbank-d2-k51.tar.gz"
+    params: outdir="inputs/databases"
+    shell:'''
+    tar xf {input} -C {params.outdir}
+    '''
+
+rule download_pasolli:
+    output: "inputs/databases/pasolli-mags-k51.tar.gz"
+    params: 
+        link= 'https://osf.io/pm5qb/download'
+    shell:'''
+    wget -O {output} {params.link}
+    '''
+
+rule untar_pasolli:
+    output: "inputs/databases/pasolli-mags-k51.sbt.json"
+    input: "inputs/databases/pasolli-mags-k51.tar.gz"
+    params: outdir="inputs/databases"
+    shell:'''
+    tar xf {input} -C {params.outdir}
+    '''
+
+rule download_almeida:
+    output: "inputs/databases/almeida-mags-k51.tar.gz"
+    params: 
+        link= 'https://osf.io/9uq4m/download'
+    shell:'''
+    wget -O {output} {params.link}
+    '''
+
+rule untar_almeida:
+    output: "inputs/databases/almeida-mags-k51.sbt.json"
+    input: "inputs/databases/almeida-mags-k51.tar.gz"
+    params: outdir="inputs/databases"
+    shell:'''
+    tar xf {input} -C {params.outdir}
+    '''
+
+rule download_nayfach:
+    output: "inputs/databases/nayfach-mags-k51.tar.gz"
+    params: 
+        link= 'https://osf.io/k35sb/download'
+    shell:'''
+    wget -O {output} {params.link}
+    '''
+
+rule untar_nayfach:
+    output: "inputs/databases/nayfach-k51.sbt.json"
+    input: "inputs/databases/nayfach-mags-k51.tar.gz"
+    params: outdir="inputs/databases"
+    shell:'''
+    tar xf {input} -C {params.outdir}
+    '''
 
 rule calculate_signatures:
     input: data_snakefile('inputs/data/{sample}.fastq.gz')
-    output:
-        sig = 'outputs/sigs/{sample}.scaled2k.sig',
+    output: sig = 'outputs/sigs/{sample}.scaled2k.sig'
     message: '--- Compute sourmash sigs using quality trimmed data.'
-    conda: 'env.yml'
-    #singularity: 'docker://quay.io/biocontainers/sourmash:2.0.0a3--py36_0'
-    log: 'outputs/sigs/{sample}_compute.log'
+    conda: 'snakefiles/env.yml'
     benchmark: 'benchmarks/{sample}.compute.benchmark.txt'
     shell:'''
     sourmash compute -o {output.sig} --scaled 2000 -k 21,31,51 --track-abundance {input}
@@ -1399,11 +1434,13 @@ rule gather_genbank:
         matches = 'outputs/gather/matches/{sample}.matches', 
         un = 'outputs/gather/unassigned/{sample}.un'
     message: '--- Classify signatures with gather.'
-    conda: 'env.yml'
+    conda: 'snakefiles/env.yml'
     benchmark: 'benchmarks/{sample}.gather.benchmark.txt'
     shell:'''
-    sourmash gather -o {output.gather} --save-matches {output.matches} --output-unassigned {output.un} --scaled 2000 -k 51 {input.sig} {input.db}
-    # note abundance tracking is on. 
+    sourmash gather -o {output.gather} \
+         --save-matches {output.matches} \
+         --output-unassigned {output.un} \
+         --scaled 2000 -k 51 {input.sig} {input.db}
     '''
 
 rule gather_human_dbs:
@@ -1411,16 +1448,21 @@ rule gather_human_dbs:
         sig = 'outputs/gather/unassigned/{sample}.un',
         db1 = 'inputs/databases/pasolli-mags-k51.sbt.json',
         db2 = 'inputs/databases/almeida-mags-k51.sbt.json',
-        db3 = 'inputs/databases/nayfach-mags-k51.sbt.json'
+        db3 = 'inputs/databases/nayfach-k51.sbt.json'
     output:
-        gather = 'outputs/gather_pasolli/gather/{sample}.gather',
-        matches = 'outputs/gather_pasolli/matches/{sample}.matches',
-        un = 'outputs/gather_pasolli/unassigned/{sample}.un'
+        gather = 'outputs/gather_human_micro/gather/{sample}.gather',
+        matches = 'outputs/gather_human_micro/matches/{sample}.matches',
+        un = 'outputs/gather_human_micro/unassigned/{sample}.un'
     message: '--- Classify signatures with gather using Pasolli, Almeida, and Nayfach dbs.'
-    conda: 'env.yml'
+    conda: 'snakefiles/env.yml'
     benchmark: 'benchmarks/{sample}.gather_human_dbs.benchmark.txt'
     shell:'''
-    sourmash gather -o {output.gather} --save-matches {output.matches} --output-unassigned {output.un} --scaled 2000 -k 51 {input.sig}
-{input.db1} {input.db2} {input.db3}
-    # note abundance tracking is on.
+    sourmash gather \
+        -o {output.gather} \
+        --save-matches {output.matches} \
+        --output-unassigned {output.un} \
+        --scaled 2000 \ 
+        -k 51 \
+        {input.sig} \
+        {input.db1} {input.db2} {input.db3}
     '''

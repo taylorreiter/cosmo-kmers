@@ -1354,12 +1354,11 @@ links = {
 def chainfile2link(wildcards):
     return links[wildcards.chainfile]
     
-
 rule download_samples:
     output:
         os.path.join("inputs/data/", "{chainfile}")
     message:
-        '--- Download pre-quality trimmed data from ibdmdb.org. As stated on the website, data is "filtered for quality and error checked for completeness."'
+        '--- Download data from ibdmdb.org. From site, data is "filtered for quality and error checked for completeness."'
     params:
         # use a function of wildcards in params
         link = chainfile2link

@@ -1,0 +1,9 @@
+catlas_base: PSM7J19P
+input_sequences:
+- inputs/data/PSM7J19Pfastq.gz
+ksize: 31
+radius: 1
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

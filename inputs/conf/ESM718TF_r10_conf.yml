@@ -1,0 +1,9 @@
+catlas_base: ESM718TF
+input_sequences:
+- inputs/data/ESM718TFfastq.gz
+ksize: 31
+radius: 10
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

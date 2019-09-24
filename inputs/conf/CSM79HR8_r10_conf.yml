@@ -1,0 +1,9 @@
+catlas_base: CSM79HR8
+input_sequences:
+- inputs/data/CSM79HR8fastq.gz
+ksize: 31
+radius: 10
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

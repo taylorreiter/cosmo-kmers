@@ -1,0 +1,9 @@
+catlas_base: MSM7J16P
+input_sequences:
+- inputs/data/MSM7J16Pfastq.gz
+ksize: 31
+radius: 10
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

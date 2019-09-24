@@ -1,0 +1,9 @@
+catlas_base: MSM6J2RC
+input_sequences:
+- inputs/data/MSM6J2RCfastq.gz
+ksize: 31
+radius: 1
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

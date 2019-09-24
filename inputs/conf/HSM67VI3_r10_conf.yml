@@ -1,0 +1,9 @@
+catlas_base: HSM67VI3
+input_sequences:
+- inputs/data/HSM67VI3fastq.gz
+ksize: 31
+radius: 10
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

@@ -1,0 +1,9 @@
+catlas_base: CSMA88CB
+input_sequences:
+- inputs/data/CSMA88CBfastq.gz
+ksize: 31
+radius: 1
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

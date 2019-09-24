@@ -1,0 +1,9 @@
+catlas_base: ESM5MECQ
+input_sequences:
+- inputs/data/ESM5MECQfastq.gz
+ksize: 31
+radius: 1
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

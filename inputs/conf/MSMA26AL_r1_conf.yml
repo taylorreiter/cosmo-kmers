@@ -1,0 +1,9 @@
+catlas_base: MSMA26AL
+input_sequences:
+- inputs/data/MSMA26ALfastq.gz
+ksize: 31
+radius: 1
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

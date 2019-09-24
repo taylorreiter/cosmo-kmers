@@ -1,0 +1,9 @@
+catlas_base: HSM7J4PG
+input_sequences:
+- inputs/data/HSM7J4PGfastq.gz
+ksize: 31
+radius: 1
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

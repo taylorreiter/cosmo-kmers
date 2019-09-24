@@ -1,0 +1,9 @@
+catlas_base: PSM6XBTX
+input_sequences:
+- inputs/data/PSM6XBTXfastq.gz
+ksize: 31
+radius: 1
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

@@ -1,0 +1,9 @@
+catlas_base: HSMA33L1
+input_sequences:
+- inputs/data/HSMA33L1fastq.gz
+ksize: 31
+radius: 10
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

@@ -1,0 +1,9 @@
+catlas_base: MSMAPC5B
+input_sequences:
+- inputs/data/MSMAPC5Bfastq.gz
+ksize: 31
+radius: 10
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

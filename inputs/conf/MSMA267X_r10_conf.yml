@@ -1,0 +1,9 @@
+catlas_base: MSMA267X
+input_sequences:
+- inputs/data/MSMA267Xfastq.gz
+ksize: 31
+radius: 10
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

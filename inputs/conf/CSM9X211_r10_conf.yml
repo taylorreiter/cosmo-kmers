@@ -1,0 +1,9 @@
+catlas_base: CSM9X211
+input_sequences:
+- inputs/data/CSM9X211fastq.gz
+ksize: 31
+radius: 10
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

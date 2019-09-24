@@ -1,0 +1,9 @@
+catlas_base: CSM7KOSL
+input_sequences:
+- inputs/data/CSM7KOSLfastq.gz
+ksize: 31
+radius: 10
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

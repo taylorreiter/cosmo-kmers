@@ -1,0 +1,9 @@
+catlas_base: PSMA26A3
+input_sequences:
+- inputs/data/PSMA26A3fastq.gz
+ksize: 31
+radius: 1
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

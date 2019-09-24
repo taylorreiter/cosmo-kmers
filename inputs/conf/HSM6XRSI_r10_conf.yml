@@ -1,0 +1,9 @@
+catlas_base: HSM6XRSI
+input_sequences:
+- inputs/data/HSM6XRSIfastq.gz
+ksize: 31
+radius: 10
+search:
+- dummy.fa
+hashval_ksize: 51
+hashval_queries: outputs/cosmo...

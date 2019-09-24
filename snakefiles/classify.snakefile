@@ -1437,10 +1437,7 @@ rule gather_genbank:
     conda: 'env.yml'
     benchmark: 'benchmarks/{sample}.gather.benchmark.txt'
     shell:'''
-    sourmash gather -o {output.gather} \
-         --save-matches {output.matches} \
-         --output-unassigned {output.un} \
-         --scaled 2000 -k 51 {input.sig} {input.db}
+    sourmash gather -o {output.gather} --save-matches {output.matches} --output-unassigned {output.un} --scaled 2000 -k 51 {input.sig} {input.db}
     '''
 
 rule gather_human_dbs:
@@ -1457,12 +1454,5 @@ rule gather_human_dbs:
     conda: 'env.yml'
     benchmark: 'benchmarks/{sample}.gather_human_dbs.benchmark.txt'
     shell:'''
-    sourmash gather \
-        -o {output.gather} \
-        --save-matches {output.matches} \
-        --output-unassigned {output.un} \
-        --scaled 2000 \ 
-        -k 51 \
-        {input.sig} \
-        {input.db1} {input.db2} {input.db3}
+    sourmash gather -o {output.gather} --save-matches {output.matches} --output-unassigned {output.un} --scaled 2000 -k 51 {input.sig} {input.db1} {input.db2} {input.db3}
     '''

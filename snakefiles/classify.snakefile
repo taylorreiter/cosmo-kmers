@@ -1346,9 +1346,9 @@ SAMPLES = ['HSMA33OT',
 'HSM67VI9',
 'MSMA26AV']
 
-subworkflow data_snakefile:
-    snakefile: "snakefiles/data.snakefile"
-
+###############################################################################
+## Download DBs and scripts
+###############################################################################
 
 rule download_genbank:
     output: "inputs/databases/genbank-d2-k51.tar.gz"
@@ -1415,12 +1415,31 @@ rule untar_nayfach:
     tar xf {input} -C {params.outdir}
     '''
 
+rule download_human_sig:
+    output: 'inputs/databases/GRCh38.p13_genomic.sig'
+    shell:'''
+    wget -O {output} https://osf.io/fxup3/download 
+    '''
+
+rule download_cosmo_kmer_script:
+    output: 'scripts/hashes-to-numpy-2.py'
+    shell: '''
+    wget -O {output} https://raw.githubusercontent.com/ctb/2017-sourmash-revindex/4c9abba665c14aefe6f3cc4755bffecf9352417f/hashes-to-numpy-2.py
+    '''
+
+###############################################################################
+## Metatranscriptomes (MTX)
+###############################################################################
+
+subworkflow data_snakefile:
+    snakefile: "snakefiles/data.snakefile"
+
 rule calculate_signatures:
     input: data_snakefile('inputs/data/{sample}.fastq.gz')
     output: sig = 'outputs/sigs/{sample}.scaled2k.sig'
     message: '--- Compute sourmash sigs using quality trimmed data.'
     conda: 'env.yml'
-    benchmark: 'benchmarks/{sample}.compute.benchmark.txt'
+#    benchmark: 'benchmarks/{sample}.compute.benchmark.txt'
     shell:'''
     sourmash compute -o {output.sig} --scaled 2000 -k 21,31,51 --track-abundance {input}
     '''
@@ -1435,7 +1454,7 @@ rule gather_genbank:
         un = 'outputs/gather/unassigned/{sample}.un'
     message: '--- Classify signatures with gather.'
     conda: 'env.yml'
-    benchmark: 'benchmarks/{sample}.gather.benchmark.txt'
+#    benchmark: 'benchmarks/{sample}.gather.benchmark.txt'
     shell:'''
     sourmash gather -o {output.gather} --save-matches {output.matches} --output-unassigned {output.un} --scaled 2000 -k 51 {input.sig} {input.db}
     '''
@@ -1452,7 +1471,101 @@ rule gather_human_dbs:
         un = 'outputs/gather_human_micro/unassigned/{sample}.un'
     message: '--- Classify signatures with gather using Pasolli, Almeida, and Nayfach dbs.'
     conda: 'env.yml'
-    benchmark: 'benchmarks/{sample}.gather_human_dbs.benchmark.txt'
+#    benchmark: 'benchmarks/{sample}.gather_human_dbs.benchmark.txt'
     shell:'''
     sourmash gather -o {output.gather} --save-matches {output.matches} --output-unassigned {output.un} --scaled 2000 -k 51 {input.sig} {input.db1} {input.db2} {input.db3}
     '''
+
+rule calc_cosmo_kmers_mtx:
+# This rule requires a script from github repo ctb/2017-sourmash-revindex.
+    input: 
+        un=expand('outputs/gather_human_micro/unassigned/{sample}.un', sample = SAMPLES),
+        script = 'scripts/hashes-to-numpy-2.py'
+    output: 
+        comp="outputs/cosmo/hmp_2k_t138_mtx",
+        labels="outputs/cosmo/hmp_2k_t138_mtx.labels.txt"
+    message: '--- Calculate cosmopolitan k-mers from unassigned hashes'
+#    benchmark: 'benchmarks/calc_cosmo_kmers.benchmark.txt'
+    conda:'env.yml'
+    shell:'''
+    {input.script} -o {output.comp} -k 51 --threshold=138 --scaled 2000 {input.un} 
+    '''
+
+rule run_spacegraphcats_hashval_query_rone_mtx:
+# note this rule currently uses conda env sgc_hq, as that's where hashval_query
+# is enabled. Bcalm has also been exported to path prior to starting snakefile.
+    input: 
+        conf = "conf/{sample}_r1_conf.yml",
+        fastq = "inputs/data/{sample}.fastq.gz",
+        cosmo = "outputs/cosmo/hmp_2k_t138.labels.txt"
+    output: "outputs/sgc_hq/{sample}_k31_r1_hashval_k51/hashval_results.csv" 
+    message: '--- Extract nbhds of cosmopolitan k-mers from each sample'
+    benchmark: 'benchmarks/{sample}.sgc_hashval_query_r1.benchmark.txt'
+    shell:'''
+    python -m spacegraphcats {input.conf} hashval_query
+    '''   
+ 
+#############################################################################
+## Metagenomes (MGX)
+#############################################################################
+
+
+subworkflow mgx_snakefile:
+    snakefile: "snakefiles/mgx.snakefile"
+
+rule untar_mgx:
+    input: mgx_snakefile('inputs/mgx_tar/{sample}.tar')
+    output: 
+        'inputs/mgx/{sample}_R1.fastq.gz',
+        'inputs/mgx/{sample}_R2.fastq.gz'
+    message: '--- Untar data'
+    shell:'''
+    tar xf {input} --directory inputs/mgx
+    '''
+
+rule calculate_signatures_mgx:
+    input:
+        r1='inputs/mgx/{sample}_R1.fastq.gz',
+        r2='inputs/mgx/{sample}_R2.fastq.gz'
+    output: 'outputs/mgx_sigs/{sample}_mgx.scaled2k.sig'
+    message: '--- Compute mgx sourmash sigs using quality trimmed data.'
+    conda: 'env.yml'
+#    benchmark: 'benchmarks/{sample}.compute_mgx.benchmark.txt'
+    shell:'''
+    sourmash compute -o {output} --merge {wildcards.sample}_mgx --scaled 2000 -k 21,31,51 --track-abundance {input.r1} {input.r2} 
+    '''
+
+rule gather_mgx:
+    input: 
+        sig = 'outputs/mgx_sigs/{sample}_mgx.scaled2k.sig',
+        human = 'inputs/databases/GRCh38.p13_genomic.sig',
+        db1 = 'inputs/databases/genbank-d2-k51.sbt.json',
+        db2 = 'inputs/databases/pasolli-mags-k51.sbt.json',
+        db3 = 'inputs/databases/almeida-mags-k51.sbt.json',
+        db4 = 'inputs/databases/nayfach-k51.sbt.json'
+    output:
+        gather = 'outputs/mgx_gather/csvs/{sample}_mgx.gather',
+        matches = 'outputs/mgx_gather/matches/{sample}_mgx.matches', 
+        un = 'outputs/mgx_gather/unassigned/{sample}_mgx.un'
+    message: '--- Classify MGX signatures with gather.'
+    conda: 'env.yml'
+#    benchmark: 'benchmarks/{sample}.gather.benchmark.txt'
+    shell:'''
+    sourmash gather -o {output.gather} --save-matches {output.matches} --output-unassigned {output.un} --scaled 2000 -k 51 {input.sig} {input.human} {input.db1} {input.db2} {input.db3} {input.db4}
+    '''
+
+rule calc_cosmo_kmers_mgx:
+# This rule requires a script from github repo ctb/2017-sourmash-revindex.
+    input: 
+        un=expand('outputs/mgx_gather/unassigned/{sample}_mgx.un', sample = SAMPLES),
+        script = 'scripts/hashes-to-numpy-2.py'
+    output: 
+        comp="outputs/cosmo/hmp_2k_t138_mgx",
+        labels="outputs/cosmo/hmp_2k_t138_mgx.labels.txt"
+    message: '--- Calculate cosmopolitan k-mers from unassigned hashes'
+#    benchmark: 'benchmarks/calc_cosmo_kmers.benchmark.txt'
+    conda:'env.yml'
+    shell:'''
+    {input.script} -o {output.comp} -k 51 --threshold=138 --scaled 2000 {input.un} 
+    '''
+

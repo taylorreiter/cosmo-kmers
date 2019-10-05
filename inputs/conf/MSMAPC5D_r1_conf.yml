@@ -5,5 +5,7 @@ ksize: 31
 radius: 1
 search:
 - dummy.fa
+searchquck:
+- dummy.fa
 hashval_ksize: 51
-hashval_queries: outputs/cosmo...
+hashval_queries: outputs/cosmo/hmp_2k_t138_mtx.labels.txt

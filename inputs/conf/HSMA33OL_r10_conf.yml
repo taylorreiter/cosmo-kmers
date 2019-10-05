@@ -1,6 +1,6 @@
 catlas_base: HSMA33OL
 input_sequences:
-- inputs/data/HSMA33OLfastq.gz
+- inputs/data/HSMA33OL.fastq.gz
 ksize: 31
 radius: 10
 search:

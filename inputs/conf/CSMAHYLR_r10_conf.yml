@@ -1,6 +1,6 @@
 catlas_base: CSMAHYLR
 input_sequences:
-- inputs/data/CSMAHYLRfastq.gz
+- inputs/data/CSMAHYLR.fastq.gz
 ksize: 31
 radius: 10
 search:

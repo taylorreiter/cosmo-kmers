@@ -1,6 +1,6 @@
 catlas_base: CSM9X22I
 input_sequences:
-- inputs/data/CSM9X22Ifastq.gz
+- inputs/data/CSM9X22I.fastq.gz
 ksize: 31
 radius: 1
 search:

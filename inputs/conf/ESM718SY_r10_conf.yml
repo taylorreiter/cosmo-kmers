@@ -1,6 +1,6 @@
 catlas_base: ESM718SY
 input_sequences:
-- inputs/data/ESM718SYfastq.gz
+- inputs/data/ESM718SY.fastq.gz
 ksize: 31
 radius: 10
 search:

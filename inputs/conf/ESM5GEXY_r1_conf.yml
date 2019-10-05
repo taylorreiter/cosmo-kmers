@@ -1,6 +1,6 @@
 catlas_base: ESM5GEXY
 input_sequences:
-- inputs/data/ESM5GEXYfastq.gz
+- inputs/data/ESM5GEXY.fastq.gz
 ksize: 31
 radius: 1
 search:

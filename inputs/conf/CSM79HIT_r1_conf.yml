@@ -1,6 +1,6 @@
 catlas_base: CSM79HIT
 input_sequences:
-- inputs/data/CSM79HITfastq.gz
+- inputs/data/CSM79HIT.fastq.gz
 ksize: 31
 radius: 1
 search:

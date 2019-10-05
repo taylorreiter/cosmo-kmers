@@ -1,6 +1,6 @@
 catlas_base: CSMAIG7X
 input_sequences:
-- inputs/data/CSMAIG7Xfastq.gz
+- inputs/data/CSMAIG7X.fastq.gz
 ksize: 31
 radius: 1
 search:

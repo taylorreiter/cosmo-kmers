@@ -1,6 +1,6 @@
 catlas_base: PSMA266C
 input_sequences:
-- inputs/data/PSMA266Cfastq.gz
+- inputs/data/PSMA266C.fastq.gz
 ksize: 31
 radius: 10
 search:

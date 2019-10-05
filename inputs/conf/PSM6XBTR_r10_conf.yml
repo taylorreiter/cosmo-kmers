@@ -1,6 +1,6 @@
 catlas_base: PSM6XBTR
 input_sequences:
-- inputs/data/PSM6XBTRfastq.gz
+- inputs/data/PSM6XBTR.fastq.gz
 ksize: 31
 radius: 10
 search:

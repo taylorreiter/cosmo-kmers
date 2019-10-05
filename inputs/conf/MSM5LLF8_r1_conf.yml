@@ -1,6 +1,6 @@
 catlas_base: MSM5LLF8
 input_sequences:
-- inputs/data/MSM5LLF8fastq.gz
+- inputs/data/MSM5LLF8.fastq.gz
 ksize: 31
 radius: 1
 search:

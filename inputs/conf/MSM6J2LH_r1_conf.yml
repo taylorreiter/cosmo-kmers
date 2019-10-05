@@ -1,6 +1,6 @@
 catlas_base: MSM6J2LH
 input_sequences:
-- inputs/data/MSM6J2LHfastq.gz
+- inputs/data/MSM6J2LH.fastq.gz
 ksize: 31
 radius: 1
 search:

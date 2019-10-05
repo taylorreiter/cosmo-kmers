@@ -1,6 +1,6 @@
 catlas_base: CSMA8M9R
 input_sequences:
-- inputs/data/CSMA8M9Rfastq.gz
+- inputs/data/CSMA8M9R.fastq.gz
 ksize: 31
 radius: 10
 search:

@@ -1,6 +1,6 @@
 catlas_base: ESM7F5CD
 input_sequences:
-- inputs/data/ESM7F5CDfastq.gz
+- inputs/data/ESM7F5CD.fastq.gz
 ksize: 31
 radius: 1
 search:

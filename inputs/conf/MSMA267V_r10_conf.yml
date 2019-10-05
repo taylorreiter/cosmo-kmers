@@ -1,6 +1,6 @@
 catlas_base: MSMA267V
 input_sequences:
-- inputs/data/MSMA267Vfastq.gz
+- inputs/data/MSMA267V.fastq.gz
 ksize: 31
 radius: 10
 search:

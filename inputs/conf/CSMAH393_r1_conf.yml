@@ -1,6 +1,6 @@
 catlas_base: CSMAH393
 input_sequences:
-- inputs/data/CSMAH393fastq.gz
+- inputs/data/CSMAH393.fastq.gz
 ksize: 31
 radius: 1
 search:

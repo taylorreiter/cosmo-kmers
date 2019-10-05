@@ -1,6 +1,6 @@
 catlas_base: MSMA2688
 input_sequences:
-- inputs/data/MSMA2688fastq.gz
+- inputs/data/MSMA2688.fastq.gz
 ksize: 31
 radius: 1
 search:

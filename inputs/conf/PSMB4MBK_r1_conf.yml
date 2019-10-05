@@ -1,6 +1,6 @@
 catlas_base: PSMB4MBK
 input_sequences:
-- inputs/data/PSMB4MBKfastq.gz
+- inputs/data/PSMB4MBK.fastq.gz
 ksize: 31
 radius: 1
 search:

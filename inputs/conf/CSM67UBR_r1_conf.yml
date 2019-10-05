@@ -1,6 +1,6 @@
 catlas_base: CSM67UBR
 input_sequences:
-- inputs/data/CSM67UBRfastq.gz
+- inputs/data/CSM67UBR.fastq.gz
 ksize: 31
 radius: 1
 search:

@@ -1,6 +1,6 @@
 catlas_base: HSM5MD4N
 input_sequences:
-- inputs/data/HSM5MD4Nfastq.gz
+- inputs/data/HSM5MD4N.fastq.gz
 ksize: 31
 radius: 10
 search:

@@ -1,6 +1,6 @@
 catlas_base: PSMA265L
 input_sequences:
-- inputs/data/PSMA265Lfastq.gz
+- inputs/data/PSMA265L.fastq.gz
 ksize: 31
 radius: 1
 search:

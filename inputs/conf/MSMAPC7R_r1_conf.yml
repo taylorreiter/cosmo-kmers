@@ -1,6 +1,6 @@
 catlas_base: MSMAPC7R
 input_sequences:
-- inputs/data/MSMAPC7Rfastq.gz
+- inputs/data/MSMAPC7R.fastq.gz
 ksize: 31
 radius: 1
 search:

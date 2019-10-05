@@ -1,6 +1,6 @@
 catlas_base: MSMA26EN
 input_sequences:
-- inputs/data/MSMA26ENfastq.gz
+- inputs/data/MSMA26EN.fastq.gz
 ksize: 31
 radius: 10
 search:

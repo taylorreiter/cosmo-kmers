@@ -1,6 +1,6 @@
 catlas_base: MSM9VZNZ
 input_sequences:
-- inputs/data/MSM9VZNZfastq.gz
+- inputs/data/MSM9VZNZ.fastq.gz
 ksize: 31
 radius: 1
 search:

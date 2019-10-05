@@ -1,6 +1,6 @@
 catlas_base: HSM5FZBZ
 input_sequences:
-- inputs/data/HSM5FZBZfastq.gz
+- inputs/data/HSM5FZBZ.fastq.gz
 ksize: 31
 radius: 10
 search:

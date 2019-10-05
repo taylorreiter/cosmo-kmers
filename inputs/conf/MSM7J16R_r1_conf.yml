@@ -1,6 +1,6 @@
 catlas_base: MSM7J16R
 input_sequences:
-- inputs/data/MSM7J16Rfastq.gz
+- inputs/data/MSM7J16R.fastq.gz
 ksize: 31
 radius: 1
 search:

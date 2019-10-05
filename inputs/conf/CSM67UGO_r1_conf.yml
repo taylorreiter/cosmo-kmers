@@ -1,6 +1,6 @@
 catlas_base: CSM67UGO
 input_sequences:
-- inputs/data/CSM67UGOfastq.gz
+- inputs/data/CSM67UGO.fastq.gz
 ksize: 31
 radius: 1
 search:

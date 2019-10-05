@@ -1,6 +1,6 @@
 catlas_base: CSMA9J65
 input_sequences:
-- inputs/data/CSMA9J65fastq.gz
+- inputs/data/CSMA9J65.fastq.gz
 ksize: 31
 radius: 10
 search:

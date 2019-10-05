@@ -1,6 +1,6 @@
 catlas_base: CSM67UEI
 input_sequences:
-- inputs/data/CSM67UEIfastq.gz
+- inputs/data/CSM67UEI.fastq.gz
 ksize: 31
 radius: 10
 search:

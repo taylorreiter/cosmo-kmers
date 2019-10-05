@@ -1,6 +1,6 @@
 catlas_base: HSM67VES
 input_sequences:
-- inputs/data/HSM67VESfastq.gz
+- inputs/data/HSM67VES.fastq.gz
 ksize: 31
 radius: 10
 search:

@@ -1,6 +1,6 @@
 catlas_base: MSM79H8F
 input_sequences:
-- inputs/data/MSM79H8Ffastq.gz
+- inputs/data/MSM79H8F.fastq.gz
 ksize: 31
 radius: 10
 search:

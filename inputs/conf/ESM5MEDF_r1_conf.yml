@@ -1,6 +1,6 @@
 catlas_base: ESM5MEDF
 input_sequences:
-- inputs/data/ESM5MEDFfastq.gz
+- inputs/data/ESM5MEDF.fastq.gz
 ksize: 31
 radius: 1
 search:

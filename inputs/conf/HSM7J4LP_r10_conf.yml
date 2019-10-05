@@ -1,6 +1,6 @@
 catlas_base: HSM7J4LP
 input_sequences:
-- inputs/data/HSM7J4LPfastq.gz
+- inputs/data/HSM7J4LP.fastq.gz
 ksize: 31
 radius: 10
 search:

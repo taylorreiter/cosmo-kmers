@@ -1,6 +1,6 @@
 catlas_base: CSM5MCVL
 input_sequences:
-- inputs/data/CSM5MCVLfastq.gz
+- inputs/data/CSM5MCVL.fastq.gz
 ksize: 31
 radius: 10
 search:

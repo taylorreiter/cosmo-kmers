@@ -1,6 +1,6 @@
 catlas_base: PSM7J1BP
 input_sequences:
-- inputs/data/PSM7J1BPfastq.gz
+- inputs/data/PSM7J1BP.fastq.gz
 ksize: 31
 radius: 10
 search:

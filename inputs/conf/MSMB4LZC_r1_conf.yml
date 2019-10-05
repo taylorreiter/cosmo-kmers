@@ -1,6 +1,6 @@
 catlas_base: MSMB4LZC
 input_sequences:
-- inputs/data/MSMB4LZCfastq.gz
+- inputs/data/MSMB4LZC.fastq.gz
 ksize: 31
 radius: 1
 search:

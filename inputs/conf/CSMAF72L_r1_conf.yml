@@ -1,6 +1,6 @@
 catlas_base: CSMAF72L
 input_sequences:
-- inputs/data/CSMAF72Lfastq.gz
+- inputs/data/CSMAF72L.fastq.gz
 ksize: 31
 radius: 1
 search:

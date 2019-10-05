@@ -1,6 +1,6 @@
 catlas_base: CSM7KOSP
 input_sequences:
-- inputs/data/CSM7KOSPfastq.gz
+- inputs/data/CSM7KOSP.fastq.gz
 ksize: 31
 radius: 1
 search:

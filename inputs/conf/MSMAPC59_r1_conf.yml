@@ -1,6 +1,6 @@
 catlas_base: MSMAPC59
 input_sequences:
-- inputs/data/MSMAPC59fastq.gz
+- inputs/data/MSMAPC59.fastq.gz
 ksize: 31
 radius: 1
 search:

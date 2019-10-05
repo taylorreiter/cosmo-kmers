@@ -1,6 +1,6 @@
 catlas_base: PSMA264W
 input_sequences:
-- inputs/data/PSMA264Wfastq.gz
+- inputs/data/PSMA264W.fastq.gz
 ksize: 31
 radius: 10
 search:

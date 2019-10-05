@@ -1,6 +1,6 @@
 catlas_base: HSM5MD79
 input_sequences:
-- inputs/data/HSM5MD79fastq.gz
+- inputs/data/HSM5MD79.fastq.gz
 ksize: 31
 radius: 10
 search:

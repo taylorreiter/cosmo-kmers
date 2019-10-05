@@ -1,6 +1,6 @@
 catlas_base: CSM67UF5
 input_sequences:
-- inputs/data/CSM67UF5fastq.gz
+- inputs/data/CSM67UF5.fastq.gz
 ksize: 31
 radius: 1
 search:

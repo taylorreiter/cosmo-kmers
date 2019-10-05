@@ -1,6 +1,6 @@
 catlas_base: CSM79HH4
 input_sequences:
-- inputs/data/CSM79HH4fastq.gz
+- inputs/data/CSM79HH4.fastq.gz
 ksize: 31
 radius: 10
 search:

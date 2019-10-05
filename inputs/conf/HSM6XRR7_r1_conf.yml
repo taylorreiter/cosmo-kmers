@@ -1,6 +1,6 @@
 catlas_base: HSM6XRR7
 input_sequences:
-- inputs/data/HSM6XRR7fastq.gz
+- inputs/data/HSM6XRR7.fastq.gz
 ksize: 31
 radius: 1
 search:

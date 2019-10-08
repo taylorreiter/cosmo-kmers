@@ -9,4 +9,5 @@ rule all:
         #"outputs/cosmo/hmp_2k_t138_mtx.labels.txt", 
         #expand('outputs/mgx_sigs/{sample}_mgx.scaled2k.sig', sample = SAMPLES),
         #"outputs/cosmo/hmp_2k_t138_mgx.labels.txt"
-        dynamic(expand("{sample}_k31_r1_hashval_k51/{{hash}}.cdbg_ids.reads.fa.gz", sample = SAMPLES)) 
+        #"outputs/mtx_r1_reads_done.txt"
+        aggregate_input

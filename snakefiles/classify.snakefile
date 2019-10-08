@@ -1512,36 +1512,47 @@ rule calc_cosmo_kmers_mtx:
     {input.script} -o {output.comp} -k 51 --threshold=138 --scaled 2000 {input.un} 
     '''
 
-rule run_spacegraphcats_hashval_query_rone_mtx:
-# note this rule currently uses conda env sgc_hq, as that's where hashval_query
+checkpoint sgc_hashvalq_rone_mtx:
+# this rule currently uses conda env sgc_hq, as that's where hashval_query
 # is enabled. Bcalm has also been exported to path prior to starting snakefile.
     input: 
         conf = "inputs/conf/{sample}_r1_conf.yml",
         fastq = "inputs/data/{sample}.fastq.gz",
         cosmo = "outputs/cosmo/hmp_2k_t138_mtx.labels.txt"
-    output: "{sample}_k31_r1_hashval_k51/hashval_results.csv" 
+    output: directory("{sample}_k31_r1_hashval_k51/") 
     message: '--- Extract nbhds of cosmopolitan k-mers from each sample'
-#    benchmark: 'benchmarks/{sample}.sgc_hashval_query_r1.benchmark.txt'
     shell:'''
     python -m spacegraphcats --nolock {input.conf} hashval_query
     '''   
  
-rule run_spacegraphcats_hashval_query_rone_mtx_reads:
-# note this rule currently uses conda env sgc_hq, as that's where hashval_query
+def aggregate_input(wildcards):
+    contigs = []
+    for s in SAMPLES:
+        checkpoint_output = checkpoints.sgc_hashvalq_rone_mtx.get(sample = s).output[0]
+        contigs += expand("{sample}_k31_r1_hashval_k51/{mhash}.cdbg_ids.reads.fa.gz",
+                 sample = s,
+                 mhash = glob_wildcards(os.path.join(checkpoint_output, "{mhash}.contigs.fa.gz")).mhash)
+    return contigs
+
+rule sgc_extract_reads_for_hashvals_rone_mtx:
+# this rule currently uses conda env sgc_hq, as that's where hashval_query
 # is enabled. Bcalm has also been exported to path prior to starting snakefile.
-# This rule is temporary, and will be removed once hashval_query does not need
-# to be run before extract_reads_for_hashvals
     input: 
         conf = "inputs/conf/{sample}_r1_conf.yml",
-        fastq = "inputs/data/{sample}.fastq.gz",
-        cosmo = "outputs/cosmo/hmp_2k_t138_mtx.labels.txt",
-        hashes = "{sample}_k31_r1_hashval_k51/hashval_results.csv"
-    output: dynamic("{sample}_k31_r1_hashval_k51/{hash}.cdbg_ids.reads.fa.gz") 
-    message: '--- Extract nbhds of cosmopolitan k-mers from each sample'
-#    benchmark: 'benchmarks/{sample}.sgc_hashval_query_r1.benchmark.txt'
+        hashes = "{sample}_k31_r1_hashval_k51/{mhash}.contigs.fa.gz"
+    output: "{sample}_k31_r1_hashval_k51/{mhash}.cdbg_ids.reads.fa.gz" 
+    message: '--- Extract nbhds reads r1'
     shell:'''
     python -m spacegraphcats --nolock {input.conf} extract_reads_for_hashvals
     '''   
+
+#rule dummy_aggregate:
+# make an aggregation rule to solve dag for minhash ids. 
+#    input: aggregate_input
+#    output: "outputs/mtx_r1_reads_done.txt"
+#    shell:'''
+#    touch {output}
+#    '''
 
 #############################################################################
 ## Metagenomes (MGX)

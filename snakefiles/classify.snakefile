@@ -1415,10 +1415,16 @@ rule untar_nayfach:
     tar xf {input} -C {params.outdir}
     '''
 
-rule download_human_sig:
+rule download_human_genome_sig:
     output: 'inputs/databases/GRCh38.p13_genomic.sig'
     shell:'''
     wget -O {output} https://osf.io/fxup3/download 
+    '''
+
+rule download_human_rna_sig:
+    output: 'inputs/databases/GRCh38_rna.sig'
+    shell:'''
+    wget -O {output} https://osf.io/anj6b/download 
     '''
 
 rule download_cosmo_kmer_script:
@@ -1476,10 +1482,25 @@ rule gather_human_dbs:
     sourmash gather -o {output.gather} --save-matches {output.matches} --output-unassigned {output.un} --scaled 2000 -k 51 {input.sig} {input.db1} {input.db2} {input.db3}
     '''
 
+rule gather_human_rna:
+    input:
+        sig = 'outputs/gather_human_micro/unassigned/{sample}.un',
+        db1 = 'inputs/databases/GRCh38_rna.sig'
+    output:
+        gather = 'outputs/gather_human_rna/gather/{sample}.gather',
+        matches = 'outputs/gather_human_rna/matches/{sample}.matches',
+        un = 'outputs/gather_human_rna/unassigned/{sample}.un'
+    message: '--- Classify signatures with gather using human rna'
+    conda: 'env.yml'
+#    benchmark: 'benchmarks/{sample}.gather_human_dbs.benchmark.txt'
+    shell:'''
+    sourmash gather -o {output.gather} --save-matches {output.matches} --output-unassigned {output.un} --scaled 2000 -k 51 {input.sig} {input.db1}
+    '''
+
 rule calc_cosmo_kmers_mtx:
 # This rule requires a script from github repo ctb/2017-sourmash-revindex.
     input: 
-        un=expand('outputs/gather_human_micro/unassigned/{sample}.un', sample = SAMPLES),
+        un=expand('outputs/gather_human_rna/unassigned/{sample}.un', sample = SAMPLES),
         script = 'scripts/hashes-to-numpy-2.py'
     output: 
         comp="outputs/cosmo/hmp_2k_t138_mtx",
@@ -1491,20 +1512,48 @@ rule calc_cosmo_kmers_mtx:
     {input.script} -o {output.comp} -k 51 --threshold=138 --scaled 2000 {input.un} 
     '''
 
-rule run_spacegraphcats_hashval_query_rone_mtx:
-# note this rule currently uses conda env sgc_hq, as that's where hashval_query
+checkpoint sgc_hashvalq_rone_mtx:
+# this rule currently uses conda env sgc_hq, as that's where hashval_query
 # is enabled. Bcalm has also been exported to path prior to starting snakefile.
     input: 
-        conf = "conf/{sample}_r1_conf.yml",
+        conf = "inputs/conf/{sample}_r1_conf.yml",
         fastq = "inputs/data/{sample}.fastq.gz",
-        cosmo = "outputs/cosmo/hmp_2k_t138.labels.txt"
-    output: "outputs/sgc_hq/{sample}_k31_r1_hashval_k51/hashval_results.csv" 
+        cosmo = "outputs/cosmo/hmp_2k_t138_mtx.labels.txt"
+    output: directory("{sample}_k31_r1_hashval_k51/") 
     message: '--- Extract nbhds of cosmopolitan k-mers from each sample'
-    benchmark: 'benchmarks/{sample}.sgc_hashval_query_r1.benchmark.txt'
     shell:'''
-    python -m spacegraphcats {input.conf} hashval_query
+    python -m spacegraphcats --nolock {input.conf} hashval_query
     '''   
  
+def aggregate_input(wildcards):
+    contigs = []
+    for s in SAMPLES:
+        checkpoint_output = checkpoints.sgc_hashvalq_rone_mtx.get(sample = s).output[0]
+        contigs += expand("{sample}_k31_r1_hashval_k51/{mhash}.cdbg_ids.reads.fa.gz",
+                 sample = s,
+                 mhash = glob_wildcards(os.path.join(checkpoint_output, "{mhash}.contigs.fa.gz")).mhash)
+    return contigs
+
+rule sgc_extract_reads_for_hashvals_rone_mtx:
+# this rule currently uses conda env sgc_hq, as that's where hashval_query
+# is enabled. Bcalm has also been exported to path prior to starting snakefile.
+    input: 
+        conf = "inputs/conf/{sample}_r1_conf.yml",
+        hashes = "{sample}_k31_r1_hashval_k51/{mhash}.contigs.fa.gz"
+    output: "{sample}_k31_r1_hashval_k51/{mhash}.cdbg_ids.reads.fa.gz" 
+    message: '--- Extract nbhds reads r1'
+    shell:'''
+    python -m spacegraphcats --nolock {input.conf} extract_reads_for_hashvals
+    '''   
+
+#rule dummy_aggregate:
+# make an aggregation rule to solve dag for minhash ids. 
+#    input: aggregate_input
+#    output: "outputs/mtx_r1_reads_done.txt"
+#    shell:'''
+#    touch {output}
+#    '''
+
 #############################################################################
 ## Metagenomes (MGX)
 #############################################################################

@@ -1512,48 +1512,79 @@ rule calc_cosmo_kmers_mtx:
     {input.script} -o {output.comp} -k 51 --threshold=138 --scaled 2000 {input.un} 
     '''
 
-checkpoint sgc_hashvalq_rone_mtx:
+#rule hashval_query_r1_mtx:
+## this rule currently uses conda env sgc_hq, as that's where hashval_query
+## is enabled. Bcalm has also been exported to path prior to starting snakefile.
+#    input: 
+#        conf = "inputs/conf/{sample}_r1_conf.yml",
+#        fastq = "inputs/data/{sample}.fastq.gz",
+#        cosmo = "outputs/cosmo/hmp_2k_t138_mtx.labels.txt"
+#    output: "{sample}_k31_r1_hashval_k51/hashval_results.csv"
+#    message: '--- Extract nbhds of cosmopolitan k-mers from each sample'
+#    shell:'''
+#    python -m spacegraphcats --nolock {input.conf} hashval_query
+#    python -m spacegraphcats --nolock {input.conf} extract_reads_for_hashvals
+#    '''   
+
+checkpoint hashval_query_r1_mtx:
 # this rule currently uses conda env sgc_hq, as that's where hashval_query
 # is enabled. Bcalm has also been exported to path prior to starting snakefile.
     input: 
         conf = "inputs/conf/{sample}_r1_conf.yml",
         fastq = "inputs/data/{sample}.fastq.gz",
         cosmo = "outputs/cosmo/hmp_2k_t138_mtx.labels.txt"
-    output: directory("{sample}_k31_r1_hashval_k51/") 
+    output: directory("{sample}_k31_r1_hashval_k51")
     message: '--- Extract nbhds of cosmopolitan k-mers from each sample'
     shell:'''
     python -m spacegraphcats --nolock {input.conf} hashval_query
-    '''   
- 
-def aggregate_input(wildcards):
-    contigs = []
-    for s in SAMPLES:
-        checkpoint_output = checkpoints.sgc_hashvalq_rone_mtx.get(sample = s).output[0]
-        contigs += expand("{sample}_k31_r1_hashval_k51/{mhash}.cdbg_ids.reads.fa.gz",
-                 sample = s,
-                 mhash = glob_wildcards(os.path.join(checkpoint_output, "{mhash}.contigs.fa.gz")).mhash)
-    return contigs
-
-rule sgc_extract_reads_for_hashvals_rone_mtx:
-# this rule currently uses conda env sgc_hq, as that's where hashval_query
-# is enabled. Bcalm has also been exported to path prior to starting snakefile.
-    input: 
-        conf = "inputs/conf/{sample}_r1_conf.yml",
-        hashes = "{sample}_k31_r1_hashval_k51/{mhash}.contigs.fa.gz"
-    output: "{sample}_k31_r1_hashval_k51/{mhash}.cdbg_ids.reads.fa.gz" 
-    message: '--- Extract nbhds reads r1'
-    shell:'''
     python -m spacegraphcats --nolock {input.conf} extract_reads_for_hashvals
     '''   
+ 
+#def aggregate_for_megahit(wildcards):
+#    hashvals = []
+#    for s in SAMPLES:
+#        checkpoint_output = checkpoints.hashval_query_r1_mtx.get(sample = s).output[0]
+#        hashvals += expand("outputs/sgc_r1_mtx/megahit/{sample}_megahit/{hashval}.contigs.fa",
+#                 sample = s,
+#                 hashval = glob_wildcards(os.path.join(checkpoint_output, "{hashval}.cdbg_ids.reads.fa.gz")).hashval)
+#    return hashvals
 
-#rule dummy_aggregate:
-# make an aggregation rule to solve dag for minhash ids. 
-#    input: aggregate_input
-#    output: "outputs/mtx_r1_reads_done.txt"
-#    shell:'''
-#    touch {output}
-#    '''
+rule megahit_rone_mtx:
+    output: 'outputs/sgc_r1_mtx/megahit/{sample}_megahit/{hashval}.contigs.fa'
+    input: '{sample}_k31_r1_hashval_k51/{hashval}.cdbg_ids.reads.fa.gz'
+    conda: 'env2.yml'
+    params: output_folder = 'outputs/sgc_r1_mtx/megahit/'
+    shell:'''
+    # megahit does not allow force overwrite, so each assembly needs to occur
+    # in it's own directory.
+    megahit -r {input} --min-contig-len 142 \
+        --out-dir {wildcards.sample}_r1_mtx_megahit \
+        --out-prefix {wildcards.sample} 
+    # move the final assembly to a folder containing all assemblies
+    mv {wildcards.sample}_r1_mtx_megahit/{wildcards.sample}.contigs.fa {output}
+    # remove the original megahit assembly folder, which is in the main directory.
+    rm -rf {wildcards.sample}_r1_mtx_megahit
+    ''' 
 
+def aggregate_for_dvf(wildcards):
+    hashvals = []
+    for s in SAMPLES:
+        checkpoint_output = checkpoints.hashval_query_r1_mtx.get(sample = s).output[0]
+	hashvals += expand("outputs/sgc_r1_mtx/dvf/{sample}_dvf/{hashval}.contigs.fa_gt150bp_dvfpred.txt",
+		 sample = s,
+		 hashval = glob_wildcards(os.path.join(checkpoint_output, "{hashval}.cdbg_ids.reads.fa.gz")).hashval)
+    return hashvals
+
+rule dvf_rone_mtx:
+    input: 'outputs/sgc_r1_mtx/megahit/{sample}_megahit/{hashval}.contigs.fa'
+    #input: aggregate_for_megahit
+    output: 'outputs/sgc_r1_mtx/dvf/{sample}_dvf/{hashval}.contigs.fa_gt150bp_dvfpred.txt'
+    params: outdir = 'outputs/sgc_r1_mtx_dvf/{sample}_dvf'
+    conda: 'dvf_env.yml'
+    shell:'''
+    python ~/github/DeepVirFinder/dvf.py -i {input} -o {params.outdir} -l 150
+    '''
+    
 #############################################################################
 ## Metagenomes (MGX)
 #############################################################################
